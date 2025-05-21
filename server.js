@@ -1,6 +1,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors';
+
 import propertyRoutes from './Routes/propertyRoutes.js';
 import searchRoutes from './Routes/searchRoutes.js';
 import publicationRoutes from './Routes/publicationRoutes.js';
@@ -10,31 +12,38 @@ dotenv.config();
 
 const app = express();
 
-// Middleware to parse JSON requests
+// ✅ Enable CORS
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://hedgesbridges.netlify.app'],
+  credentials: true,
+}));
+
+// ✅ Middleware to parse JSON
 app.use(express.json());
 
-// Connect to MongoDB
+// ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Mongo connected'))
   .catch((err) => console.error(err));
 
-// Register all route files
+// ✅ Routes
 app.use('/api/property', propertyRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/publication', publicationRoutes);
 app.use('/api/review', reviewRoutes);
 
-// Basic route for testing
+// ✅ Test route
 app.get('/', (req, res) => {
   res.send('Welcome to the backend!');
 });
 
-// Error handling middleware
+// ✅ Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send({ message: "Something went wrong!" });
 });
 
+// ✅ Start server
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
