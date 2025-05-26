@@ -12,38 +12,40 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Enable CORS
+// Enable CORS
 app.use(cors({
   origin: ['http://localhost:5173', 'https://hedgesbridges.netlify.app'],
   credentials: true,
 }));
 
-// ✅ Middleware to parse JSON
+app.options('*', cors()); 
+
+//  Middleware to parse JSON
 app.use(express.json());
 
-// ✅ MongoDB connection
+//  MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Mongo connected'))
   .catch((err) => console.error(err));
 
-// ✅ Routes
+// Routes
 app.use('/api/property', propertyRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/publication', publicationRoutes);
 app.use('/api/review', reviewRoutes);
 
-// ✅ Test route
+// Test route
 app.get('/', (req, res) => {
   res.send('Welcome to the backend!');
 });
 
-// ✅ Error handler
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send({ message: "Something went wrong!" });
 });
 
-// ✅ Start server
+// Start server
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
